@@ -1,0 +1,37 @@
+package main
+
+import (
+	"database/sql"
+	"fmt"
+	"net/http"
+)
+
+func main() {
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		username := r.URL.Query().Get("username")
+		password := r.URL.Query().Get("password")
+
+		db, err := sql.Open("mysql", "user:password@/dbname")
+		if err != nil {
+			http.Error(w, "Database error", http.StatusInternalServerError)
+			return
+		}
+		defer db.Close()
+
+		query := fmt.Sprintf("SELECT * FROM users WHERE username='%s' AND password='%s'", username, password)
+		rows, err := db.Query(query)
+		if err != nil {
+			http.Error(w, "Query error", http.StatusInternalServerError)
+			return
+		}
+		defer rows.Close()
+
+		if rows.Next() {
+			fmt.Fprintf(w, "Login successful!")
+		} else {
+			fmt.Fprintf(w, "Invalid credentials")
+		}
+	})
+
+	http.ListenAndServe(":8080", nil)
+}
