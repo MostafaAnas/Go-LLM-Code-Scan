@@ -11,37 +11,49 @@ import (
 	"github.com/czc09/langchaingo/llms/ollama"
 )
 
-
-
-func main() {
-
-
+func checkArgs() {
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: go run main.go <code-file>")
 		return
 	}
+}
+
+func readSystemMessage() (string, error){
 	// Read System message
 	// Get the absolute path to the systemmessage.txt file
 	basePath, err := os.Getwd() // Get the current working directory
 	if err != nil {
 		fmt.Printf("Error getting current directory: %v\n", err)
-		return
+		return "", err
 	}
 	systemfilePath := filepath.Join(basePath, "systemmessage.txt")
 	systemMessageByte, err := os.ReadFile(systemfilePath)
 
 	if err != nil {
 		fmt.Printf("Error reading file: %v\n", err)
-		return
+		return "", err
 	}
 
-	systemmessage := string(systemMessageByte)
+	return string(systemMessageByte), nil
+}
+
+
+func main() {
+
+	checkArgs()
+
+	systemmessage, err := readSystemMessage()
+	
+	if err != nil {
+		fmt.Println("Failed to read system message:", err)
+		return
+	}
 
 	// Read code from file
 	filePath := os.Args[1]
 
 	codeBytes, err := os.ReadFile(filePath)
-   
+
 	if err != nil {
 		fmt.Printf("Error reading file: %v\n", err)
 		return
