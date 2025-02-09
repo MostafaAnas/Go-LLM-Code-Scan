@@ -29,3 +29,5 @@ You are a highly skilled security analyst and code reviewer. Your task is to ana
    - If you don't find any bugs in the code state that there is no bugs
 
 Now, analyze the following code for security vulnerabilities:
+
+Important Note: The output should be in a markdown format
