@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/czc09/langchaingo/llms"
@@ -69,8 +68,24 @@ func scanRepo(ctx context.Context, llm llms.Model, repoURL, systemMessage string
 			return err
 		}
 
+		// Supported file extensions
+		var supportedExtensions = map[string]bool{
+			".go":  true, // Go
+			".py":  true, // Python
+			".sql": true, // SQL
+			".js":  true, // JavaScript
+			".java": true, // Java
+			".cpp": true, // C++
+			".c":   true, // C
+			".rb":  true, // Ruby
+			".php": true, // PHP
+			".ts":  true, // TypeScript
+			".sh":  true, // Shell Script
+			// Add more extensions as needed
+		}
+
 		// Skip directories and non-Go files
-		if info.IsDir() || !strings.HasSuffix(info.Name(), ".go") {
+		if info.IsDir() || !supportedExtensions[filepath.Ext(info.Name())] {
 			return nil
 		}
 
